@@ -1,0 +1,32 @@
+//Frame sort 
+import java.util.*;
+
+public class FrameSort{
+  public static void main(String [] args){
+    List <int []> frames=new ArrayList<>();
+    System.out.print("Enter the number of frames:");
+    Scanner sc=new Scanner(System.in);
+    int n=sc.nextInt();
+    for(int i=0;i<n;i++){
+      Random random=new Random();
+      int seqNumber=random.nextInt(1000)+1;
+      System.out.printf("Enter the data for %dth frame>>",i+1);
+      int data=sc.nextInt();
+      frame.add(new int[]{seqNumber,data});
+    }
+      System.out.println("\n\n Before sorting:");
+      for(int [] i:frames){
+        System.out.printf("SeqNumber-> %d  Frame->%d",i[0],i[1]);
+      }
+      frames=sortFrame(frames);
+      System.out.println("\n\n After Sorting:");
+      for(int[] i:frames){
+        System.out.printf("SeqNumber->%d  Frame->%d",i[0],i[1]);
+      }
+  }
+
+    public static List<int[]> sortFrame(List<int []> frames){
+      Collections.sort(frames,(a,b)->Integer.compare(a[0],b[0]));
+      return frames;
+    }
+}
