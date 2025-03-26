@@ -1,0 +1,63 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class SimpleBellmanFord {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Input: Number of vertices and edges
+        System.out.print("Enter number of vertices: ");
+        int V = scanner.nextInt();
+        System.out.print("Enter number of edges: ");
+        int E = scanner.nextInt();
+
+        int[][] edges = new int[E][3]; // Stores edges as {src, dest, weight}
+
+        // Input: Graph edges
+        System.out.println("Enter edges (src dest weight):");
+        for (int i = 0; i < E; i++) {
+            edges[i][0] = scanner.nextInt(); // Source
+            edges[i][1] = scanner.nextInt(); // Destination
+            edges[i][2] = scanner.nextInt(); // Weight
+        }
+
+        // Input: Source vertex
+        System.out.print("Enter the source vertex: ");
+        int source = scanner.nextInt();
+
+        // Run Bellman-Ford Algorithm
+        bellmanFord(V, E, edges, source);
+
+        scanner.close();
+    }
+
+    public static void bellmanFord(int V, int E, int[][] edges, int source) {
+        int[] distance = new int[V];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[source] = 0;
+
+        // Relax all edges V-1 times
+        for (int i = 0; i < V - 1; i++) {
+            for (int[] edge : edges) {
+                int src = edge[0], dest = edge[1], weight = edge[2];
+                if (distance[src] != Integer.MAX_VALUE && distance[src] + weight < distance[dest]) {
+                    distance[dest] = distance[src] + weight;
+                }
+            }
+        }
+
+        // Check for negative weight cycles
+        for (int[] edge : edges) {
+            if (distance[edge[0]] != Integer.MAX_VALUE && distance[edge[0]] + edge[2] < distance[edge[1]]) {
+                System.out.println("❌ Graph contains a negative weight cycle!");
+                return;
+            }
+        }
+
+        // Print shortest distances
+        System.out.println("\nVertex   Distance from Source " + source);
+        for (int i = 0; i < V; i++) {
+            System.out.println(i + "        " + (distance[i] == Integer.MAX_VALUE ? "∞" : distance[i]));
+        }
+    }
+}
