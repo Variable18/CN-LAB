@@ -1,0 +1,39 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Scanner;
+
+public class RED{
+    private static int Queue_max_length=10;
+    private static int Min_threshold=3;
+    private static int Max_threshold=7;
+    
+    public static void main (String [] args){
+        Queue <Integer> queue=new LinkedList<>();
+        Random random=new Random();
+        Scanner sc=new Scanner(System.in);
+        System.out.print("Enter number of packets to process:");
+        int numPackets=sc.nextInt();
+        for(int i=1;i<=numPackets;i++){
+            System.out.println("Processing packets "+i+" ...");
+            int queueSize=queue.size();
+            
+            if(queueSize>=Queue_max_length){
+                System.out.println("Packets "+i+" dropped(Queue full)");
+            }else if(queueSize>=Max_threshold){
+                System.out.println("Packets "+i+" dropped(above max threshold)");
+            }else if(queueSize>=Min_threshold){
+                double dropProbability=(double)(queueSize-Min_threshold)/(Max_threshold-Min_threshold);
+                if(random.nextDouble()<dropProbability){
+                System.out.println("Packets "+i+" randomly dropped");
+                }
+            queue.add(i);
+            System.out.println("Packet "+i+" added to queue.Current size:"+queue.size());
+            }else{
+            queue.add(i);
+            System.out.println("Packet "+i+" added to queue.Current size:"+queue.size());
+            }
+        }
+        sc.close();
+    }
+}
