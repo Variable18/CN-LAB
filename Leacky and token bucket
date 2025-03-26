@@ -1,0 +1,82 @@
+//Leacky bucket
+import java.util.Scanner;
+
+public class LeakyBucket {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter bucket capacity: ");
+        int bucketSize = scanner.nextInt();
+        System.out.print("Enter outgoing rate (packets/sec): ");
+        int outgoingRate = scanner.nextInt();
+        System.out.print("Enter number of input packets: ");
+        int numPackets = scanner.nextInt();
+
+        int[] packets = new int[numPackets];
+        System.out.println("Enter packet sizes:");
+        for (int i = 0; i < numPackets; i++) {
+            packets[i] = scanner.nextInt();
+        }
+
+        int currentBucket = 0; // Initial bucket level
+
+        System.out.println("\nProcessing packets...");
+        for (int i = 0; i < numPackets; i++) {
+            if (packets[i] > bucketSize) {
+                System.out.println("Packet " + (i + 1) + " (size: " + packets[i] + ") discarded (too large).");
+                continue;
+            }
+
+            if (currentBucket + packets[i] > bucketSize) {
+                System.out.println("Packet " + (i + 1) + " (size: " + packets[i] + ") discarded (bucket overflow).");
+            } else {
+                currentBucket += packets[i];
+                System.out.println("Packet " + (i + 1) + " (size: " + packets[i] + ") added. Current bucket: " + currentBucket);
+            }
+
+            // Leak packets at outgoing rate
+            currentBucket = Math.max(0, currentBucket - outgoingRate);
+            System.out.println("After outgoing rate applied, bucket level: " + currentBucket);
+        }
+
+        scanner.close();
+    }
+}
+
+// Token bucket
+import java.util.Scanner;
+
+public class TokenBucket {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter bucket capacity (max tokens): ");
+        int bucketCapacity = scanner.nextInt();
+        System.out.print("Enter token generation rate (tokens/sec): ");
+        int tokenRate = scanner.nextInt();
+        System.out.print("Enter number of packets: ");
+        int numPackets = scanner.nextInt();
+
+        int[] packets = new int[numPackets];
+        System.out.println("Enter packet sizes:");
+        for (int i = 0; i < numPackets; i++) {
+            packets[i] = scanner.nextInt();
+        }
+
+        int tokens = 0; // Initially, no tokens in bucket
+
+        System.out.println("\nProcessing packets...");
+        for (int i = 0; i < numPackets; i++) {
+            tokens = Math.min(bucketCapacity, tokens + tokenRate); // Add tokens up to bucket limit
+
+            if (packets[i] <= tokens) {
+                tokens -= packets[i]; // Consume tokens for sending packet
+                System.out.println("Packet " + (i + 1) + " (size: " + packets[i] + ") sent. Tokens left: " + tokens);
+            } else {
+                System.out.println("Packet " + (i + 1) + " (size: " + packets[i] + ") discarded (not enough tokens).");
+            }
+        }
+
+        scanner.close();
+    }
+}
