@@ -1,0 +1,59 @@
+//UPD
+//UPD server side
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Scanner;
+
+public class UDPserver{
+    public static void main(String [] args){
+        int port=5000;
+        try(DatagramSocket serversocket=new DatagramSocket(port)){
+            System.out.println("Server is running....Type a message to send:");
+            Scanner sc=new Scanner(System.in);
+            InetAddress clientAddress=InetAddress.getByName("localhost");
+            int clientport=6000;
+            while(true){
+                System.out.print("Server:");
+                String message=sc.nextLine();
+                byte[] buffer=message.getBytes();
+                DatagramPacket packet=new DatagramPacket(buffer,buffer.length,clientAddress,clientport);
+                serversocket.send(packet);
+                if(message.equalsIgnoreCase("exit")){
+                    System.out.println("Server is shutting down");
+                    break;
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+
+//UDP client side
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+public class UDPclient{
+    public static void main(String [] args){
+        int port=6000;
+        try(DatagramSocket clientsocket=new DatagramSocket(port)){
+        byte[] buffer= new byte[1024];
+        System.out.println("Client is waiting for messages");
+        while(true){
+            DatagramPacket packet=new DatagramPacket(buffer,buffer.length);
+            clientsocket.receive(packet);
+            String message=new String(packet.getData(),0,packet.getLength());
+            System.out.println("Server:"+message);
+            if(message.equalsIgnoreCase("exit")){
+                System.out.println("Client is shutting down");
+                break;
+            }
+        }
+          }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+}
