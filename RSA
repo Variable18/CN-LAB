@@ -1,0 +1,53 @@
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Scanner;
+
+public class RSA {
+    private BigInteger n, d, e;
+    private int bitLength = 1024; // Key size (1024-bit security)
+
+    // RSA Key Generation
+    public RSA() {
+        SecureRandom random = new SecureRandom();
+        BigInteger p = BigInteger.probablePrime(bitLength / 2, random);
+        BigInteger q = BigInteger.probablePrime(bitLength / 2, random);
+        n = p.multiply(q); // n = p * q
+        BigInteger phi = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE)); // φ(n) = (p-1)(q-1)
+
+        // Choose a valid public exponent e
+        do {
+            e = BigInteger.probablePrime(bitLength / 4, random); // Ensure e is valid
+        } while (!phi.gcd(e).equals(BigInteger.ONE)); // e must be coprime with phi(n)
+
+        d = e.modInverse(phi); // Compute private exponent d = e^(-1) mod φ(n)
+    }
+
+    // Encrypt message using public key (n, e)
+    public BigInteger encrypt(BigInteger message) {
+        return message.modPow(e, n);
+    }
+
+    // Decrypt message using private key (n, d)
+    public BigInteger decrypt(BigInteger encrypted) {
+        return encrypted.modPow(d, n);
+    }
+
+    public static void main(String[] args) {
+        RSA rsa = new RSA();
+        Scanner scanner = new Scanner(System.in);
+
+        // Input message
+        System.out.print("Enter a message (numeric value): ");
+        BigInteger message = scanner.nextBigInteger();
+
+        // Encryption
+        BigInteger encrypted = rsa.encrypt(message);
+        System.out.println("Encrypted Message: " + encrypted);
+
+        // Decryption
+        BigInteger decrypted = rsa.decrypt(encrypted);
+        System.out.println("Decrypted Message: " + decrypted);
+
+        scanner.close();
+    }
+}
